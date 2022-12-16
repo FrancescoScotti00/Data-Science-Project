@@ -1,0 +1,123 @@
+##Final Project 
+##Data to explore World Development Indicators##
+
+#question 1##
+## I will analyze how and if, the level of GDP growth impact unemployment in the countries listed in the World Bank data
+
+setwd ("~/Downloads")
+
+wdidata20 <- read.csv("wdidata20.csv")
+
+View(wdidata20)
+
+##2
+##I will analyze the World Bank data from 1980 to 2020 from 216 countries.
+
+range(wdidata20$year, na.rm = T)
+
+#number of rows
+nrow(wdidata20)
+## 8856 rows
+
+#number of columns
+ncol(wdidata20)
+
+# i create 2 dependent data relatives to Europe and Central Asia and SubShara Africa 
+
+EU_CA = wdidata20[wdidata20$region == "Europe & Central Asia",]
+SubSaha_Afri = wdidata20[wdidata20$region == "Sub-Saharan Africa",]
+
+#3 I will calculate the range (min/max) of the GDP annual Growth and and Unemployment in all the countries listed in World Bank Data
+
+GDP.agrowth <- c(wdidata20$NY.GDP.MKTP.KD.ZG)
+
+EU_CA_GDP.agrowth <-c(EU_CA$NY.GDP.MKTP.KD.ZG)
+
+SubSaha_GDP.agrowth <- c(SubSaha_Afri$NY.GDP.MKTP.KD.ZG)
+
+range(GDP.agrowth , na.rm = T)
+
+#min
+#-64.04711
+#max
+#149.97296
+
+Unemployment <- c(wdidata20$SL.UEM.TOTL.NE.ZS)
+
+EU_CAUnemployment <- c(EU_CA$SL.UEM.TOTL.NE.ZS)
+
+SubSaha_Unemployment <- c(SubSaha_Afri$SL.UEM.TOTL.NE.ZS)
+
+range(Unemployment , na.rm = T)
+
+#min
+##0.05 
+#max
+##57.00
+
+
+#I create a regression model relative to the relative to the annual growth of GDP and unemployment of all the regions present in the "wdidata"
+
+head(wdidata20)
+
+fit <- lm(GDP.agrowth ~ Unemployment, data = wdidata20)
+
+coef(fit)
+
+plot(x=wdidata20$SL.UEM.TOTL.NE.ZS,
+     y=wdidata20$NY.GDP.MKTP.KD.ZG, 
+     ylab = "% Overall World Bank Data GDP Annual Growth",
+     xlab =  "% Overall World Bank Data Unemployment", 
+     main=" Plot GDP Annual Growth versus growth of unemployment",
+     pch=20)
+
+abline(fit, lwd=3, col = "purple") # add line
+
+##regression coefficient: #3.79 / -0.06
+
+
+#I create 2 regression model (plot) related to the GDP annual growth and Unemployment to show the differences between more developed countries and less developed countries
+
+##Comparison between Europe and Central Asia GDP Annual Growth and Unempolyment (more developed countries)
+
+#Europe and Central Asia regression model
+
+head(EU_CA)
+
+fit <- lm(EU_CA_GDP.agrowth ~ EU_CAUnemployment, data = EU_CA)
+
+coef(fit)
+
+plot(x=EU_CA$SL.UEM.TOTL.NE.ZS,
+     y=EU_CA$NY.GDP.MKTP.KD.ZG, 
+     ylab = "% Europe and Central Asia GDP Annual Growth",
+     xlab = "% Europe and Central Asia Unemployment", 
+     main="Europe and Central Asia GDP Annual Growth versus unemployment rate",
+     pch=20)
+
+abline(fit, lwd=3, col = "purple") # add line
+
+#Regression coefficient: 2.44/ 0.016
+#result: a small upward (approx from 0% to 5%)
+
+##Comparison Sub Sahara Africa GDP Annual Growth and Unemployment (less developed countries)
+
+head(SubSaha_Afri)
+
+fit <- lm(SubSaha_GDP.agrowth ~ SubSaha_Unemployment, data = SubSaha_Afri)
+
+coef(fit)
+
+plot(x=SubSaha_Afri$SL.UEM.TOTL.NE.ZS,
+     y=SubSaha_Afri$NY.GDP.MKTP.KD.ZG, 
+     ylab = "% Sub Sahara Africa GDP Annual Growth",
+     xlab = "% Sub Sahara Africa Unemployment rate", 
+     main="Sub Sahara Africa GDP Annual Growth versus unemployment rate",
+     pch=20)
+
+abline(fit, lwd=3, col = "purple") # add line
+
+#Regression coefficient: 4.88/ 0.07
+#result: a small downward (approx from 0% to 5%)
+
+#conclusion:The EU_CA and SubShara Africa plot suggests that higher values of GDP Annual Growth can be associated with lower values of Unemployment rate
